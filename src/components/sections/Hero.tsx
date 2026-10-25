@@ -37,11 +37,29 @@ const rise: Variants = {
 export function Hero() {
   return (
     <section id="home" aria-labelledby="hero-title" className="relative overflow-hidden border-b border-steel-200 bg-white">
+      {/* Background imagery: subtle precision engineering gear train with blueprint gradient */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 overflow-hidden select-none">
+        <picture>
+          <source type="image/webp" srcSet="/images/photos/hero-bg-1280.webp 1280w, /images/photos/hero-bg.webp 1920w" />
+          <img
+            src="/images/photos/hero-bg.jpg"
+            alt=""
+            className="h-full w-full object-cover object-right-top opacity-20 mix-blend-multiply sm:opacity-25"
+            width={1920}
+            height={1080}
+            loading="eager"
+            decoding="async"
+          />
+        </picture>
+        <div className="absolute inset-0 bg-gradient-to-r from-white via-white/85 to-white/40" />
+        <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-white/30" />
+      </div>
+
       <div
         aria-hidden="true"
-        className="drafting-grid pointer-events-none absolute inset-y-0 right-0 hidden w-[62%] [mask-image:linear-gradient(to_right,transparent,black_35%)] lg:block"
+        className="drafting-grid pointer-events-none absolute inset-y-0 right-0 z-0 hidden w-[62%] [mask-image:linear-gradient(to_right,transparent,black_35%)] lg:block"
       />
-      <Container className="relative grid items-center gap-12 pt-10 pb-16 sm:pt-14 lg:grid-cols-[minmax(0,1.12fr)_minmax(0,1fr)] lg:gap-12 lg:pt-14 lg:pb-20 xl:gap-16">
+      <Container className="relative z-10 grid items-center gap-12 pt-10 pb-16 sm:pt-14 lg:grid-cols-[minmax(0,1.12fr)_minmax(0,1fr)] lg:gap-12 lg:pt-14 lg:pb-20 xl:gap-16">
         <m.div variants={intro} initial="hidden" animate="show">
           <m.p
             variants={rise}
