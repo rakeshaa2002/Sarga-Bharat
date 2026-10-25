@@ -1,0 +1,197 @@
+@import '@fontsource-variable/archivo/wdth.css';
+@import 'tailwindcss';
+
+/*
+ * Design tokens
+ * navy      – primary dark surfaces, headings
+ * blue      – industrial blue for links, icons and focus
+ * cyan      – the logo's own cyan, used for technical line work on dark surfaces
+ * steel     – cool greys for backgrounds, borders and secondary text
+ * orange    – reserved for call-to-action buttons
+ */
+@theme {
+  --font-sans: 'Archivo Variable', 'Segoe UI', system-ui, -apple-system, sans-serif;
+
+  --color-navy-950: #071a33;
+  --color-navy-900: #0b2545;
+  --color-navy-800: #13335c;
+  --color-navy-700: #1d4373;
+
+  --color-blue-700: #1b5faa;
+  --color-blue-600: #2370c4;
+  --color-blue-50: #eaf2fb;
+
+  --color-cyan-400: #2db8ea;
+
+  --color-steel-50: #f5f7fa;
+  --color-steel-100: #eef2f6;
+  --color-steel-200: #dde3ea;
+  --color-steel-300: #c4ceda;
+  --color-steel-400: #8fa0b5;
+  --color-steel-600: #5a6878;
+  --color-ink: #0f1d2e;
+
+  --color-orange-500: #e0661b;
+  --color-orange-600: #c84d0e;
+  --color-orange-700: #a93f0a;
+
+  --color-success-700: #19734a;
+  --color-success-50: #e8f5ee;
+  --color-danger-700: #b42318;
+  --color-danger-50: #fdecea;
+
+  --radius-sm: 2px;
+  --radius: 4px;
+
+  --shadow-tile: 0 1px 2px rgb(11 37 69 / 0.06), 0 8px 24px -12px rgb(11 37 69 / 0.18);
+  --shadow-raised: 0 2px 4px rgb(11 37 69 / 0.06), 0 18px 40px -18px rgb(11 37 69 / 0.35);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    /* keeps anchored sections clear of the sticky header */
+    scroll-padding-top: 5.5rem;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  body {
+    @apply bg-white font-sans text-ink antialiased;
+    font-size: 1rem;
+    line-height: 1.65;
+    font-feature-settings: 'kern', 'liga';
+    overflow-x: hidden;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-stretch: 88%;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background: var(--color-blue-700);
+    color: #fff;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-blue-600);
+    outline-offset: 3px;
+    border-radius: var(--radius-sm);
+  }
+
+  .on-dark :focus-visible {
+    outline-color: var(--color-cyan-400);
+  }
+
+  /* sections receive programmatic focus after in-page navigation; no ring needed */
+  section[tabindex='-1']:focus,
+  article[tabindex='-1']:focus {
+    outline: none;
+  }
+}
+
+@layer components {
+  /* Faint drafting-paper grid used behind the hero */
+  .drafting-grid {
+    background-image:
+      linear-gradient(to right, rgb(27 95 170 / 0.07) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(27 95 170 / 0.07) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+
+  /* Catalogue product images: white source backgrounds blend into the tile tint */
+  .catalogue-img {
+    mix-blend-mode: multiply;
+  }
+
+  /*
+   * Rotating bearing (BearingSpinner). The inner ring turns at shaft speed and the ball set
+   * with its cage at roughly 0.4x, as the cage of a real deep groove ball bearing does.
+   */
+  .bearing-spin-inner,
+  .bearing-spin-cage {
+    transform-box: view-box;
+    transform-origin: 50% 50%;
+    animation: bearing-spin linear infinite;
+  }
+  .bearing-spin-inner {
+    animation-duration: 6s;
+  }
+  .bearing-spin-cage {
+    animation-duration: 15s;
+  }
+
+  /* rolling elements in BearingSectionDrawing; they pick up the accent colour when their card is hovered */
+  .bearing-element {
+    fill: #dbe7f5;
+    stroke: var(--color-blue-700);
+    stroke-width: 1.6;
+    transition:
+      fill 300ms ease,
+      stroke 300ms ease;
+  }
+  .group:hover .bearing-element,
+  .group:focus-within .bearing-element {
+    fill: #fde3d2;
+    stroke: var(--color-orange-600);
+  }
+
+  /* briefly outlines a card reached from search or the menus (see lib/scroll.ts) */
+  .is-highlighted {
+    animation: highlight-flash 1.8s ease-out;
+  }
+
+  /* soft ring that draws attention to the WhatsApp button a few times after load */
+  .whatsapp-ping {
+    animation: whatsapp-ping 2.4s cubic-bezier(0, 0, 0.2, 1) 1.2s 3;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bearing-spin-inner,
+    .bearing-spin-cage,
+    .whatsapp-ping {
+      animation: none;
+    }
+  }
+}
+
+@keyframes bearing-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes highlight-flash {
+  0%,
+  35% {
+    box-shadow: 0 0 0 3px var(--color-orange-500);
+  }
+  100% {
+    box-shadow: 0 0 0 3px transparent;
+  }
+}
+
+@keyframes whatsapp-ping {
+  0% {
+    transform: scale(1);
+    opacity: 0.55;
+  }
+  80%,
+  100% {
+    transform: scale(1.7);
+    opacity: 0;
+  }
+}
