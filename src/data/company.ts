@@ -22,8 +22,8 @@ export const company = {
     'We believe in integrity, trust, quality, innovation, and collective growth—creating value for every partner and progress for every generation.',
   location: 'Bengaluru',
   email: {
-    display: 'info@santhoshmechatronics.com',
-    href: 'mailto:info@santhoshmechatronics.com',
+    display: 'ramannasanthosh.8@gmail.com',
+    href: 'mailto:ramannasanthosh.8@gmail.com',
   },
   offices: [
     {
