@@ -38,7 +38,7 @@ The site is deployed on Vercel from the `main` branch (`vercel.json`). The publi
 it when a custom domain is added, since canonical links, the sitemap and structured data use it:
 
 ```bash
-VITE_SITE_URL=https://sarga-bharat.vercel.app
+VITE_SITE_URL=https://sargabharatindustries.com
 ```
 
 `npm run build` runs three steps: the browser build, a server build of `src/entry-server.tsx`, and

@@ -8,7 +8,7 @@ import { bearingPath, routes, sectorPath } from './routes'
  */
 
 /** Public site address; override with VITE_SITE_URL in .env when a custom domain is added. */
-export const SITE_URL = (import.meta.env?.VITE_SITE_URL || 'https://sarga-bharat.vercel.app').replace(/\/$/, '')
+export const SITE_URL = (import.meta.env?.VITE_SITE_URL || 'https://sargabharatindustries.com').replace(/\/$/, '')
 
 export interface PageMeta {
   path: string
