@@ -1,4 +1,5 @@
 import { bearingProducts, solutionSectors, technologies } from '../data/bearings'
+import { bearingPath, sectorPath, technologyPath } from './routes'
 
 export interface SearchEntry {
   id: string
@@ -30,7 +31,7 @@ export const searchIndex: SearchEntry[] = [
     id: b.id,
     label: b.name,
     kind: familyLabel[b.family],
-    target: `#bearing-${b.id}`,
+    target: bearingPath(b.id),
     keywords: productKeywords[b.id] ?? '',
   })),
   ...solutionSectors.flatMap((s) =>
@@ -38,7 +39,7 @@ export const searchIndex: SearchEntry[] = [
       id: `${s.id}-${i}`,
       label: item,
       kind: s.tabLabel,
-      target: `#solutions-${s.id}`,
+      target: sectorPath(s.id),
       keywords: `${s.tabLabel} ${s.title}`,
     })),
   ),
@@ -46,7 +47,7 @@ export const searchIndex: SearchEntry[] = [
     id: t.id,
     label: t.name,
     kind: 'Technology',
-    target: `#tech-${t.id}`,
+    target: technologyPath(t.id),
     keywords: 'specialised technology',
   })),
 ]

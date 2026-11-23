@@ -3,7 +3,8 @@ import { Car, CircleDot, Search, Sparkles } from 'lucide-react'
 import { useId, useMemo, useState, type FormEvent, type KeyboardEvent } from 'react'
 import { useEnquiry } from '../../context/enquiry-context'
 import { company, whatsappLink } from '../../data/company'
-import { scrollToHash } from '../../lib/scroll'
+import { useNavigate } from 'react-router'
+import { bearingPath, routes, sectorPath, technologyPath } from '../../lib/routes'
 import { searchCatalogue, type SearchEntry } from '../../lib/search'
 import { BearingSpinner } from '../ui/BearingSpinner'
 import { BrandMark } from '../ui/BrandLogo'
@@ -12,11 +13,11 @@ import { Container } from '../ui/Container'
 import { WhatsAppIcon } from '../ui/WhatsAppButton'
 
 const suggestions = [
-  { label: 'Deep groove ball', target: '#bearing-deep-groove-ball' },
-  { label: 'Tapered roller', target: '#bearing-tapered-roller' },
-  { label: 'Wheel hub units', target: '#solutions-automotive' },
-  { label: 'Electric motor', target: '#solutions-industrial' },
-  { label: 'Insulated bearings', target: '#tech-electrically-insulated' },
+  { label: 'Deep groove ball', target: bearingPath('deep-groove-ball') },
+  { label: 'Tapered roller', target: bearingPath('tapered-roller') },
+  { label: 'Wheel hub units', target: sectorPath('automotive') },
+  { label: 'Electric motor', target: sectorPath('industrial') },
+  { label: 'Insulated bearings', target: technologyPath('electrically-insulated') },
 ]
 
 const highlights = [
@@ -92,10 +93,10 @@ export function Hero() {
           </m.div>
 
           <m.div variants={rise} className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
-            <ButtonLink href="#products" size="lg" variant="secondary">
+            <ButtonLink to={routes.products} size="lg" variant="secondary">
               Explore Bearing Range
             </ButtonLink>
-            <ButtonLink href="#contact" size="lg">
+            <ButtonLink to={routes.contact} size="lg">
               Request a Quote
             </ButtonLink>
             <a
@@ -140,19 +141,20 @@ function BearingSearch() {
   const optionId = (i: number) => `${listId}-option-${i}`
   const results = useMemo(() => searchCatalogue(query), [query])
   const { requestInterest } = useEnquiry()
+  const navigate = useNavigate()
   const showList = open && query.trim().length > 0
 
   const choose = (entry: SearchEntry) => {
     setOpen(false)
     setQuery('')
     setActive(-1)
-    scrollToHash(entry.target)
+    navigate(entry.target)
   }
 
   const askTeam = () => {
     requestInterest('Other / not sure yet', `I am looking for: ${query.trim()}`)
     setOpen(false)
-    scrollToHash('#contact')
+    navigate(routes.contact)
   }
 
   const onSubmit = (e: FormEvent) => {
@@ -160,7 +162,7 @@ function BearingSearch() {
     if (results[active]) choose(results[active])
     else if (results[0]) choose(results[0])
     else if (query.trim()) askTeam()
-    else scrollToHash('#products')
+    else navigate(routes.products)
   }
 
   const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -277,7 +279,7 @@ function BearingSearch() {
           <button
             key={s.label}
             type="button"
-            onClick={() => scrollToHash(s.target)}
+            onClick={() => navigate(s.target)}
             className="rounded-full border border-steel-200 bg-steel-50 px-3 py-1 font-medium text-navy-800 transition-colors hover:border-blue-600 hover:bg-blue-50 hover:text-blue-700"
           >
             {s.label}

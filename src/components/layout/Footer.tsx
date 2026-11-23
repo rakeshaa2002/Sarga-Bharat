@@ -1,4 +1,6 @@
 import type { ReactNode } from 'react'
+import { Link } from 'react-router'
+import { bearingPath, sectorPath, technologyPath } from '../../lib/routes'
 import { bearingProducts, solutionSectors, technologies } from '../../data/bearings'
 import { company, whatsappLink } from '../../data/company'
 import { navigation } from '../../data/navigation'
@@ -32,7 +34,7 @@ export function Footer() {
 
         <FooterColumn title="Bearing products">
           {bearingProducts.map((b) => (
-            <FooterLink key={b.id} href={`#bearing-${b.id}`}>
+            <FooterLink key={b.id} href={bearingPath(b.id)}>
               {b.name}
             </FooterLink>
           ))}
@@ -40,13 +42,13 @@ export function Footer() {
 
         <FooterColumn title="Solutions">
           {solutionSectors.map((s) => (
-            <FooterLink key={s.id} href={`#solutions-${s.id}`}>
+            <FooterLink key={s.id} href={sectorPath(s.id)}>
               {s.title}
             </FooterLink>
           ))}
           <li className="pt-3 text-[15px] font-semibold text-white">Technologies</li>
           {technologies.map((t) => (
-            <FooterLink key={t.id} href={`#tech-${t.id}`}>
+            <FooterLink key={t.id} href={technologyPath(t.id)}>
               {t.name}
             </FooterLink>
           ))}
@@ -105,9 +107,13 @@ export function Footer() {
             © {year} {company.name} All rights reserved.
           </p>
           <p>{company.tagline}</p>
-          <a href="#home" className="hover:text-white">
+          <button
+            type="button"
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            className="self-start hover:text-white sm:self-auto"
+          >
             Back to top
-          </a>
+          </button>
         </Container>
       </div>
     </footer>
@@ -126,9 +132,9 @@ function FooterColumn({ title, children }: { title: string; children: ReactNode 
 function FooterLink({ href, children }: { href: string; children: ReactNode }) {
   return (
     <li>
-      <a href={href} className="transition-colors hover:text-white">
+      <Link to={href} className="transition-colors hover:text-white">
         {children}
-      </a>
+      </Link>
     </li>
   )
 }

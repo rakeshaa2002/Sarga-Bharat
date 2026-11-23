@@ -1,15 +1,12 @@
 /**
- * Smoothly scrolls to an in-page section (respecting reduced-motion preferences),
- * updates the URL hash, moves keyboard focus to the target and briefly highlights it.
+ * Smoothly scrolls to an element on the current page (respecting reduced-motion preferences),
+ * moves keyboard focus to it and briefly highlights it. Returns false if the element isn't rendered yet.
  */
-export function scrollToHash(hash: string) {
-  const el = document.getElementById(hash.replace(/^#/, ''))
-  if (!el) return
+export function scrollToId(id: string, smooth = true): boolean {
+  const el = document.getElementById(id)
+  if (!el) return false
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  el.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' })
-  history.pushState(null, '', hash)
-  // pushState does not fire hashchange; components such as the sector tabs listen for it
-  window.dispatchEvent(new HashChangeEvent('hashchange'))
+  el.scrollIntoView({ behavior: smooth && !reduce ? 'smooth' : 'auto', block: 'start' })
   if (!el.hasAttribute('tabindex')) el.setAttribute('tabindex', '-1')
   el.focus({ preventScroll: true })
   if (el.dataset.highlight !== undefined) {
@@ -17,4 +14,5 @@ export function scrollToHash(hash: string) {
     void el.offsetWidth // restart the animation
     el.classList.add('is-highlighted')
   }
+  return true
 }

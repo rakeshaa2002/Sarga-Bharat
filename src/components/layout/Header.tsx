@@ -2,20 +2,18 @@ import { AnimatePresence, m } from 'framer-motion'
 import { ArrowRight, ChevronDown, Mail, MapPin, Menu, Phone, X } from 'lucide-react'
 import { useCallback, useEffect, useId, useRef, useState, type MouseEvent, type ReactNode, type RefObject } from 'react'
 import { company, whatsappLink } from '../../data/company'
-import { navigation, productMegaMenu, type NavItem } from '../../data/navigation'
-import { useActiveSection } from '../../hooks/useActiveSection'
+import { Link, useLocation, useNavigate } from 'react-router'
+import { isActive, navigation, productMegaMenu, type NavItem } from '../../data/navigation'
 import { useScrolled } from '../../hooks/useScrolled'
-import { scrollToHash } from '../../lib/scroll'
+import { routes } from '../../lib/routes'
 import { BrandLogo } from '../ui/BrandLogo'
 import { ButtonLink } from '../ui/Button'
 import { Container } from '../ui/Container'
 import { WhatsAppIcon } from '../ui/WhatsAppButton'
 
-const sectionIds = navigation.map((n) => n.section)
-
 export function Header() {
   const scrolled = useScrolled(40)
-  const active = useActiveSection(sectionIds)
+  const { pathname } = useLocation()
   const [menuOpen, setMenuOpen] = useState(false)
   const headerRef = useRef<HTMLElement>(null)
   const toggleRef = useRef<HTMLButtonElement>(null)
@@ -35,19 +33,19 @@ export function Header() {
       >
         {/* relative: the Products mega menu spans the full container width */}
         <Container className="relative flex h-16 items-center justify-between gap-4 lg:h-[76px]">
-          <a
-            href="#home"
+          <Link
+            to={routes.home}
             className="shrink-0 rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
             aria-label={`${company.name} — Home`}
           >
             <BrandLogo />
-          </a>
+          </Link>
 
           {/* The full desktop nav needs xl width alongside the logo lockup; below that the menu button takes over */}
           <nav aria-label="Main navigation" className="hidden xl:block">
             <ul className="flex items-center">
               {navigation.map((item) => (
-                <DesktopNavItem key={item.href} item={item} active={active === item.section} />
+                <DesktopNavItem key={item.href} item={item} active={isActive(item, pathname)} />
               ))}
             </ul>
           </nav>
@@ -55,7 +53,7 @@ export function Header() {
           <div className="flex items-center gap-2.5">
             {/* On phones the logo needs the width; the quote button is in the menu and the hero */}
             <span className="hidden sm:block">
-              <ButtonLink href="#contact" className="h-11 px-5 text-[15px] font-semibold shadow-sm">
+              <ButtonLink to={routes.contact} className="h-11 px-5 text-[15px] font-semibold shadow-sm">
                 Request a Quote
               </ButtonLink>
             </span>
@@ -73,7 +71,7 @@ export function Header() {
           </div>
         </Container>
 
-        <MobileMenu open={menuOpen} active={active} headerRef={headerRef} onClose={closeMenu} />
+        <MobileMenu open={menuOpen} pathname={pathname} headerRef={headerRef} onClose={closeMenu} />
       </header>
     </>
   )
@@ -136,9 +134,9 @@ function NavAnchor({
   children: ReactNode
 }) {
   return (
-    <a
-      href={href}
-      aria-current={active ? 'location' : undefined}
+    <Link
+      to={href}
+      aria-current={active ? 'page' : undefined}
       className={`group relative inline-flex h-11 items-center pl-3 text-[15px] font-medium transition-colors hover:text-blue-700 xl:pl-3.5 ${
         hasSubmenu ? 'pr-1' : 'pr-3 xl:pr-3.5'
       } ${active ? 'text-blue-700' : 'text-navy-900'}`}
@@ -150,7 +148,7 @@ function NavAnchor({
           hasSubmenu ? 'right-1' : 'right-3 xl:right-3.5'
         } ${active ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'}`}
       />
-    </a>
+    </Link>
   )
 }
 
@@ -161,6 +159,7 @@ function DesktopNavItem({ item, active }: { item: NavItem; active: boolean }) {
   const itemRef = useRef<HTMLLIElement>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
   const panelId = useId()
+  const navigate = useNavigate()
 
   useEffect(() => () => window.clearTimeout(closeTimer.current), [])
 
@@ -190,11 +189,10 @@ function DesktopNavItem({ item, active }: { item: NavItem; active: boolean }) {
     openedByHover.current = false
     setOpen(!open)
   }
-  // in-page jump that also highlights the target and switches the sector tab when needed
   const go = (e: MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault()
     setOpen(false)
-    scrollToHash(href)
+    navigate(href)
   }
 
   return (
@@ -245,7 +243,7 @@ function DesktopNavItem({ item, active }: { item: NavItem; active: boolean }) {
             className="absolute inset-x-4 top-full z-50 pt-1 sm:inset-x-6 lg:inset-x-8"
           >
             <div className="rounded-lg border border-steel-200 bg-white p-6 shadow-raised">
-              <div className="grid grid-cols-4 gap-6">
+              <div className="grid gap-6" style={{ gridTemplateColumns: `repeat(${productMegaMenu.length}, minmax(0, 1fr))` }}>
                 {productMegaMenu.map((group, gi) => (
                   <m.div
                     key={group.title}
@@ -278,8 +276,8 @@ function DesktopNavItem({ item, active }: { item: NavItem; active: boolean }) {
               </div>
               <div className="mt-5 flex items-center justify-between border-t border-steel-200 pt-4 text-sm">
                 <a
-                  href="#products"
-                  onClick={(e) => go(e, '#products')}
+                  href={routes.products}
+                  onClick={(e) => go(e, routes.products)}
                   className="inline-flex items-center gap-1.5 font-semibold text-blue-700 hover:text-navy-900"
                 >
                   Explore the bearing range <ArrowRight aria-hidden="true" className="size-4" />
@@ -332,13 +330,14 @@ function DesktopNavItem({ item, active }: { item: NavItem; active: boolean }) {
 
 interface MobileMenuProps {
   open: boolean
-  active: string
+  pathname: string
   headerRef: RefObject<HTMLElement | null>
   onClose: (returnFocus: boolean) => void
 }
 
-function MobileMenu({ open, active, headerRef, onClose }: MobileMenuProps) {
+function MobileMenu({ open, pathname, headerRef, onClose }: MobileMenuProps) {
   const panelRef = useRef<HTMLDivElement>(null)
+  const navigate = useNavigate()
   const [top, setTop] = useState(64)
 
   useEffect(() => {
@@ -370,7 +369,8 @@ function MobileMenu({ open, active, headerRef, onClose }: MobileMenuProps) {
   const go = (e: MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault()
     onClose(false)
-    requestAnimationFrame(() => scrollToHash(href))
+    // wait for the scroll lock to be released before the new page scrolls
+    requestAnimationFrame(() => navigate(href))
   }
 
   return (
@@ -393,12 +393,12 @@ function MobileMenu({ open, active, headerRef, onClose }: MobileMenuProps) {
           <nav aria-label="Main">
             <ul className="divide-y divide-steel-200 border-b border-steel-200 px-4 sm:px-6">
               {navigation.map((item) => (
-                <MobileNavItem key={item.href} item={item} active={active === item.section} onNavigate={go} />
+                <MobileNavItem key={item.href} item={item} active={isActive(item, pathname)} onNavigate={go} />
               ))}
             </ul>
           </nav>
           <div className="space-y-3 px-4 py-6 sm:px-6">
-            <ButtonLink href="#contact" size="lg" className="w-full text-center" onClick={(e) => go(e, '#contact')}>
+            <ButtonLink href={routes.contact} size="lg" className="w-full text-center" onClick={(e) => go(e, routes.contact)}>
               Request a Quote
             </ButtonLink>
             <a
@@ -442,7 +442,7 @@ function MobileNavItem({
       <div className="flex items-center justify-between">
         <a
           href={item.href}
-          aria-current={active ? 'location' : undefined}
+          aria-current={active ? 'page' : undefined}
           onClick={(e) => onNavigate(e, item.href)}
           className={`flex-1 py-4 text-[17px] font-semibold ${active ? 'text-blue-700' : 'text-navy-900'}`}
         >

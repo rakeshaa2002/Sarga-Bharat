@@ -1,11 +1,12 @@
 import { AnimatePresence, m } from 'framer-motion'
 import { Car, CheckCircle2, Factory, type LucideIcon } from 'lucide-react'
-import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
+import { useRef, type KeyboardEvent } from 'react'
+import { useNavigate } from 'react-router'
 import { useEnquiry } from '../../context/enquiry-context'
 import { solutionSectors, type SolutionSector } from '../../data/bearings'
 import { whatsappLink } from '../../data/company'
 import { ease } from '../../lib/motion'
-import { scrollToHash } from '../../lib/scroll'
+import { routes, sectorPath } from '../../lib/routes'
 import { Button } from '../ui/Button'
 import { Container } from '../ui/Container'
 import { EnquireLink } from '../ui/EnquireLink'
@@ -16,25 +17,14 @@ import { WhatsAppIcon } from '../ui/WhatsAppButton'
 
 const sectorIcon: Record<SolutionSector['id'], LucideIcon> = { automotive: Car, industrial: Factory }
 
-/** Reads "#solutions-automotive" style hashes so menu links and search results open the matching tab. */
-function sectorFromHash(): SolutionSector['id'] | null {
-  const match = window.location.hash.match(/^#solutions-(automotive|industrial)$/)
-  return match ? (match[1] as SolutionSector['id']) : null
-}
-
-export function Solutions() {
-  const [activeId, setActiveId] = useState<SolutionSector['id']>(() => sectorFromHash() ?? 'automotive')
+/** Sector showcase; the open tab is part of the page address (/solutions/<sector>). */
+export function Solutions({ activeId }: { activeId: SolutionSector['id'] }) {
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([])
+  const navigate = useNavigate()
   const sector = solutionSectors.find((s) => s.id === activeId) ?? solutionSectors[0]
-
-  useEffect(() => {
-    const sync = () => {
-      const id = sectorFromHash()
-      if (id) setActiveId(id)
-    }
-    window.addEventListener('hashchange', sync)
-    return () => window.removeEventListener('hashchange', sync)
-  }, [])
+  // switching tabs updates the address without jumping the page back to the top
+  const setActiveId = (id: SolutionSector['id']) =>
+    navigate(sectorPath(id), { replace: true, preventScrollReset: true, state: { keepScroll: true } })
 
   const onTabKey = (e: KeyboardEvent<HTMLButtonElement>, index: number) => {
     const last = solutionSectors.length - 1
@@ -52,10 +42,6 @@ export function Solutions() {
 
   return (
     <section id="solutions" aria-labelledby="solutions-title" className="relative border-b border-steel-200 bg-steel-50 py-20 lg:py-28">
-      {/* in-page targets for the sector links in the menus and search */}
-      {solutionSectors.map((s) => (
-        <span key={s.id} id={`solutions-${s.id}`} className="absolute top-0 block scroll-mt-0" aria-hidden="true" />
-      ))}
       <Container>
         <Reveal>
           <SectionHeading
@@ -184,6 +170,7 @@ function SectorGallery({ sector }: { sector: SolutionSector }) {
 
 function SectorList({ sector }: { sector: SolutionSector }) {
   const { requestInterest } = useEnquiry()
+  const navigate = useNavigate()
   return (
     <div className="flex flex-col rounded-lg border border-steel-200 bg-white p-5 sm:p-7">
       <h3 className="text-lg font-bold text-navy-900">{sector.tabLabel} range</h3>
@@ -214,7 +201,7 @@ function SectorList({ sector }: { sector: SolutionSector }) {
         <Button
           onClick={() => {
             requestInterest(sector.items[0])
-            scrollToHash('#contact')
+            navigate(routes.contact)
           }}
         >
           Discuss your {sector.tabLabel.toLowerCase()} application

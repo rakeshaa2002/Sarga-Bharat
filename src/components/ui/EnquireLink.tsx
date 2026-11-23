@@ -1,5 +1,7 @@
 import type { ReactNode } from 'react'
+import { Link } from 'react-router'
 import { useEnquiry } from '../../context/enquiry-context'
+import { routes } from '../../lib/routes'
 
 interface EnquireLinkProps {
   /** Value pre-selected in the enquiry form's "Product or service of interest" field */
@@ -17,17 +19,17 @@ const tones = {
   dark: 'text-cyan-400 decoration-cyan-400/40 hover:text-white hover:decoration-white',
 }
 
-/** Scrolls to the contact section and pre-selects the related product or service. */
+/** Opens the Contact page with the related product or service pre-selected in the enquiry form. */
 export function EnquireLink({ interest, className = '', children = 'Enquire now', label, tone = 'light' }: EnquireLinkProps) {
   const { requestInterest } = useEnquiry()
   return (
-    <a
-      href="#contact"
+    <Link
+      to={routes.contact}
       aria-label={label}
       onClick={() => requestInterest(interest)}
       className={`font-semibold underline decoration-1 underline-offset-4 transition-colors ${tones[tone]} ${className}`}
     >
       {children}
-    </a>
+    </Link>
   )
 }

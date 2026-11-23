@@ -65,7 +65,7 @@ export function About() {
               <figcaption className="mt-1.5 text-sm text-steel-600">Our philosophy</figcaption>
             </figure>
             <div className="mt-8">
-              <ButtonLink href="#contact" size="lg">
+              <ButtonLink to="/contact" size="lg">
                 Contact Our Team
               </ButtonLink>
             </div>

@@ -1,3 +1,4 @@
+import { bearingPath, routes, sectorPath, technologyPath } from '../lib/routes'
 import { bearingProducts, solutionSectors, technologies } from './bearings'
 
 export interface NavLink {
@@ -12,48 +13,51 @@ export interface MegaGroup {
 }
 
 export interface NavItem extends NavLink {
-  /** id of the page section this item points to, used for active-state highlighting */
-  section: string
   /** shown as an accordion in the mobile menu */
   children?: NavLink[]
   isMegaMenu?: boolean
 }
 
-/** The Products mega menu: the full portfolio in five columns. */
+/** The Products mega menu: the full portfolio, one column per group. */
 export const productMegaMenu: MegaGroup[] = [
   {
     title: 'Bearing Products',
-    href: '#products',
-    links: bearingProducts.map((b) => ({ label: b.name, href: `#bearing-${b.id}` })),
+    href: routes.products,
+    links: bearingProducts.map((b) => ({ label: b.name, href: bearingPath(b.id) })),
   },
   ...solutionSectors.map((s) => ({
     title: s.title,
-    href: `#solutions-${s.id}`,
-    links: s.items.map((item) => ({ label: item, href: `#solutions-${s.id}` })),
+    href: sectorPath(s.id),
+    links: s.items.map((item) => ({ label: item, href: sectorPath(s.id) })),
   })),
   {
     title: 'Specialised Technologies',
-    href: '#technologies',
-    links: technologies.map((t) => ({ label: t.name, href: `#tech-${t.id}` })),
+    href: routes.technologies,
+    links: technologies.map((t) => ({ label: t.name, href: technologyPath(t.id) })),
   },
 ]
 
 export const navigation: NavItem[] = [
-  { label: 'Home', href: '#home', section: 'home' },
+  { label: 'Home', href: routes.home },
   {
     label: 'Products',
-    href: '#products',
-    section: 'products',
+    href: routes.products,
     isMegaMenu: true,
-    children: productMegaMenu.map((g) => ({ label: g.title, href: g.href })),
+    children: [
+      { label: 'All bearing products', href: routes.products },
+      ...bearingProducts.map((b) => ({ label: b.name, href: bearingPath(b.id) })),
+    ],
   },
   {
     label: 'Solutions',
-    href: '#solutions',
-    section: 'solutions',
-    children: solutionSectors.map((s) => ({ label: s.tabLabel, href: `#solutions-${s.id}` })),
+    href: routes.solutions,
+    children: solutionSectors.map((s) => ({ label: s.tabLabel, href: sectorPath(s.id) })),
   },
-  { label: 'Technologies', href: '#technologies', section: 'technologies' },
-  { label: 'About Us', href: '#about', section: 'about' },
-  { label: 'Contact', href: '#contact', section: 'contact' },
+  { label: 'Technologies', href: routes.technologies },
+  { label: 'About Us', href: routes.about },
+  { label: 'Contact', href: routes.contact },
 ]
+
+/** True when `pathname` belongs to the nav item (Home only matches exactly). */
+export const isActive = (item: NavLink, pathname: string) =>
+  item.href === '/' ? pathname === '/' : pathname === item.href || pathname.startsWith(item.href + '/')

@@ -1,7 +1,11 @@
 import { AnimatePresence, m } from 'framer-motion'
+import { ArrowRight } from 'lucide-react'
 import { useState } from 'react'
+import { Link } from 'react-router'
 import { bearingFamilies, bearingProducts, licenseUrls, type BearingFamily } from '../../data/bearings'
+import { bearingPath, routes } from '../../lib/routes'
 import { BearingSectionDrawing } from '../ui/BearingSectionDrawing'
+import { ButtonLink } from '../ui/Button'
 import { Container } from '../ui/Container'
 import { EnquireLink } from '../ui/EnquireLink'
 import { Reveal } from '../ui/Reveal'
@@ -9,9 +13,13 @@ import { SectionHeading } from '../ui/SectionHeading'
 
 const familyName: Record<BearingFamily, string> = { ball: 'Ball bearing', roller: 'Roller bearing', thrust: 'Thrust bearing' }
 
-export function BearingRange() {
+/** How many bearing types the home page preview shows before linking to the Products page. */
+const PREVIEW_COUNT = 5
+
+export function BearingRange({ preview = false }: { preview?: boolean }) {
   const [family, setFamily] = useState<BearingFamily | 'all'>('all')
-  const shown = family === 'all' ? bearingProducts : bearingProducts.filter((b) => b.family === family)
+  const filtered = family === 'all' ? bearingProducts : bearingProducts.filter((b) => b.family === family)
+  const shown = preview ? bearingProducts.slice(0, PREVIEW_COUNT) : filtered
   const count = (id: BearingFamily | 'all') => (id === 'all' ? bearingProducts.length : bearingProducts.filter((b) => b.family === id).length)
 
   return (
@@ -20,11 +28,19 @@ export function BearingRange() {
         <Reveal>
           <SectionHeading
             id="products-title"
-            title="Bearing Products"
-            subtitle="Ball, roller and thrust bearings for radial, axial and combined loads, shown in section."
+            title={preview ? 'Our Bearing Range' : 'All Bearing Types'}
+            subtitle="Ball, roller and thrust bearings for radial, axial and combined loads, supplied across India."
+            aside={
+              preview ? (
+                <ButtonLink to={routes.products} variant="secondary">
+                  View all {bearingProducts.length} bearing types <ArrowRight aria-hidden="true" className="size-4" />
+                </ButtonLink>
+              ) : undefined
+            }
           />
         </Reveal>
 
+        {!preview && (
         <Reveal delay={0.1} className="mt-10">
           <div role="group" aria-label="Filter bearing types" className="inline-flex flex-wrap gap-1 rounded-lg border border-steel-200 bg-steel-50 p-1">
             {bearingFamilies.map((f) => {
@@ -54,6 +70,7 @@ export function BearingRange() {
             })}
           </div>
         </Reveal>
+        )}
         <p aria-live="polite" className="sr-only">
           Showing {shown.length} bearing types
         </p>
@@ -77,7 +94,7 @@ export function BearingRange() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: '0px 0px -8% 0px' }}
                   transition={{ duration: 0.6, delay: (i % 4) * 0.07, ease: [0.22, 1, 0.36, 1] }}
-                  className="group flex h-full scroll-mt-4 flex-col rounded-lg border border-steel-200 bg-white transition-[border-color,box-shadow,translate] duration-300 hover:-translate-y-1 hover:border-blue-600/50 hover:shadow-raised"
+                  className="group relative flex h-full scroll-mt-4 flex-col rounded-lg border border-steel-200 bg-white transition-[border-color,box-shadow,translate] duration-300 hover:-translate-y-1 hover:border-blue-600/50 hover:shadow-raised"
                 >
                   <div className="relative aspect-[5/4] overflow-hidden rounded-t-lg border-b border-steel-200 bg-white">
                     <img
@@ -101,11 +118,14 @@ export function BearingRange() {
                   </div>
                   <div className="flex flex-1 flex-col p-5">
                     <h3 id={`bearing-${b.id}-title`} className="text-[17px] leading-snug font-bold text-navy-900">
-                      {b.name}
+                      {/* the whole card opens the detail page; the Enquire link sits above this overlay */}
+                      <Link to={bearingPath(b.id)} className="after:absolute after:inset-0 after:rounded-lg hover:text-blue-700">
+                        {b.name}
+                      </Link>
                     </h3>
                     <p className="mt-2 flex-1 text-sm leading-relaxed text-steel-600">{b.summary}</p>
                     <div className="mt-5 border-t border-steel-200 pt-4 text-sm">
-                      <EnquireLink interest={b.name} label={`Enquire now about ${b.name}`}>
+                      <EnquireLink interest={b.name} label={`Enquire now about ${b.name}`} className="relative z-10">
                         Enquire now
                       </EnquireLink>
                     </div>
@@ -116,6 +136,7 @@ export function BearingRange() {
           </AnimatePresence>
         </m.ul>
 
+        {!preview && (
         <Reveal className="mt-8 space-y-2 text-sm text-steel-600">
           <p>
             Sizes, series, seals, cages and internal clearances are confirmed on enquiry. Images are representative
@@ -155,6 +176,7 @@ export function BearingRange() {
             </ul>
           </details>
         </Reveal>
+        )}
       </Container>
     </section>
   )

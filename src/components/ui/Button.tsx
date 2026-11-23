@@ -1,4 +1,5 @@
 import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode } from 'react'
+import { Link } from 'react-router'
 
 type Variant = 'primary' | 'secondary' | 'outline-light'
 type Size = 'md' | 'lg'
@@ -24,10 +25,19 @@ function buttonClasses(variant: Variant = 'primary', size: Size = 'md', classNam
 interface ButtonLinkProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
   variant?: Variant
   size?: Size
+  /** internal page route; rendered as a router link instead of a plain anchor */
+  to?: string
   children: ReactNode
 }
 
-export function ButtonLink({ variant, size, className, children, ...rest }: ButtonLinkProps) {
+export function ButtonLink({ variant, size, className, children, to, ...rest }: ButtonLinkProps) {
+  if (to) {
+    return (
+      <Link to={to} className={buttonClasses(variant, size, className)} {...rest}>
+        {children}
+      </Link>
+    )
+  }
   return (
     <a className={buttonClasses(variant, size, className)} {...rest}>
       {children}

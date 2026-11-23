@@ -7,7 +7,8 @@ import { EnquireLink } from '../ui/EnquireLink'
 import { inViewStagger, staggerItem } from '../../lib/motion'
 import { Reveal } from '../ui/Reveal'
 
-export function Technologies() {
+export function Technologies({ preview = false }: { preview?: boolean }) {
+  const shown = preview ? technologies.slice(0, 4) : technologies
   return (
     <section
       id="technologies"
@@ -38,14 +39,14 @@ export function Technologies() {
             </span>
           </Reveal>
           <Reveal delay={0.2} className="mt-10">
-            <ButtonLink href="#contact" variant="outline-light">
-              Discuss a technology requirement
+            <ButtonLink to={preview ? '/technologies' : '/contact'} variant="outline-light">
+              {preview ? `View all ${technologies.length} technologies` : 'Discuss a technology requirement'}
             </ButtonLink>
           </Reveal>
         </div>
 
         <m.ul {...inViewStagger} className="grid content-start gap-4 sm:grid-cols-2">
-          {technologies.map(({ id, name, summary, icon: Icon }) => (
+          {shown.map(({ id, name, summary, icon: Icon }) => (
             <m.li key={id} variants={staggerItem}>
               <article
                 id={`tech-${id}`}

@@ -1,7 +1,7 @@
 # Sarga Bharath Industries Pvt. Ltd. — Bearing Solutions Website
 
-A single-page corporate website for Sarga Bharath Industries ("From Indian to Indians · Make in India | Built for
-the World"). It presents the company's bearing products, automotive, industrial and railway bearing solutions, and
+A multi-page corporate website for Sarga Bharath Industries ("From Indian to Indians · Make in India | Built for
+the World"). It presents the company's bearing products, automotive and industrial bearing solutions, and
 specialised bearing technologies, and invites B2B enquiries by form or WhatsApp.
 
 This is a **frontend-only website**. There is no e-commerce, cart, login, database or backend.
@@ -9,6 +9,7 @@ This is a **frontend-only website**. There is no e-commerce, cart, login, databa
 ## Tech stack
 
 - React 19 + TypeScript, built with Vite
+- React Router 7, with every page pre-rendered to static HTML at build time (for search engines)
 - Tailwind CSS v4 (design tokens and animation keyframes in `src/index.css`)
 - Framer Motion through `LazyMotion` with `domMax` (scroll reveals, tab and filter transitions, layout animation)
 - Lucide React icons
@@ -26,41 +27,54 @@ npm run dev        # http://localhost:5173
 | Command             | What it does                                     |
 | ------------------- | ------------------------------------------------ |
 | `npm run dev`       | Start the development server with hot reload     |
-| `npm run build`     | Type-check, then build for production to `dist/` |
+| `npm run build`     | Type-check, build, pre-render every page to `dist/` |
 | `npm run preview`   | Serve the production build locally               |
 | `npm run typecheck` | Run the TypeScript compiler only                 |
 | `npm run lint`      | Lint with oxlint                                 |
 
-### Before deploying
+### Deploying
 
-Set the public site address in `.env` so Open Graph tags and structured data use absolute URLs:
+The site is deployed on Vercel from the `main` branch (`vercel.json`). The public address is set in `.env`; change
+it when a custom domain is added, since canonical links, the sitemap and structured data use it:
 
 ```bash
-VITE_SITE_URL=https://www.your-domain.example
+VITE_SITE_URL=https://sarga-bharat.vercel.app
 ```
 
-`dist/` is a static site, so it can be hosted on any static host (Netlify, Vercel, Cloudflare Pages, S3, or an
-Apache/Nginx server).
+`npm run build` runs three steps: the browser build, a server build of `src/entry-server.tsx`, and
+`scripts/prerender.mjs`, which writes `dist/<page>/index.html` for every page with its own title, description,
+canonical link, Open Graph tags and breadcrumb structured data, plus `404.html`, `sitemap.xml` and `robots.txt`.
+In the browser, React attaches to that HTML. `dist/` is a static site and can be hosted on any static host.
 
-## Page structure
+## SEO
 
-| Section | Anchor | What it does |
-| --- | --- | --- |
-| Header | — | Top bar with email, phone and WhatsApp; sticky menu with a five-column Products mega menu |
-| Hero | `#home` | Headline, bearing search, CTAs, drawing-sheet photo with a rotating "Detail A" bearing |
-| Bearing Products | `#products`, `#bearing-<id>` | 10 bearing types with section drawings; ball / roller / thrust filter |
-| Application Solutions | `#solutions`, `#solutions-automotive` / `-industrial` / `-railway` | Tabbed sector showcase with photos and solution lists |
-| Specialised Technologies | `#technologies`, `#tech-<id>` | Six technologies on a blueprint background with a rotating bearing |
-| Why Sarga Bharath | `#why-choose-us` | Four reasons, drawn from the company's own statements |
-| About | `#about` | Company introduction, philosophy, vision, mission and values |
-| Contact | `#contact` | WhatsApp, phone, email, offices and the enquiry form |
-| Footer | — | Product, solution and technology links; contact details |
+Search targeting is buyers across India, with the company's Bengaluru (Bangalore) office as its base: titles and
+descriptions use terms such as "bearing supplier in India", "automotive bearings India", "industrial bearings
+India" and "Bengaluru". Page titles and descriptions live in `src/lib/seo.ts`; site-wide tags and the
+Organization / LocalBusiness structured data (address, phone, area served: India) are in `index.html`. After
+deploying, submit `/sitemap.xml` in Google Search Console (the verification file is in `public/`).
+
+## Pages
+
+| Address | Page |
+| --- | --- |
+| `/` | Home: hero with bearing search, product preview, sectors, technologies preview, why choose us |
+| `/products` | All 10 bearing types with ball / roller / thrust filter |
+| `/products/<id>` | One page per bearing type: photo, section drawing, sectors, related bearings, quote request |
+| `/solutions/automotive`, `/solutions/industrial` | Sector solutions (`/solutions` redirects to automotive) |
+| `/technologies` | Six specialised bearing technologies (`#tech-<id>` anchors) |
+| `/about` | Company introduction, philosophy, vision, mission, values, why choose us |
+| `/contact` | WhatsApp, phone, email, office and the enquiry form |
+
+Addresses and page links are defined in `src/lib/routes.ts`; the routes in `src/App.tsx`.
 
 A floating WhatsApp button (bottom right) opens a chat with **+91 96325 56494** with a pre-filled greeting.
 
 ```
 src/
-  App.tsx                      page composition
+  App.tsx                      routes and shared layout
+  main.tsx / entry-server.tsx  browser entry / pre-render entry
+  pages/                       one component per page
   index.css                    Tailwind import, colour/type tokens, animations
   data/
     bearings.ts                bearing products, sector solutions, technologies, enquiry options
@@ -68,13 +82,14 @@ src/
     company.ts                 name, taglines, vision / mission / values, offices, phone, email, WhatsApp
     navigation.ts              menu and mega menu, built from bearings.ts
   components/
-    layout/                    Header, Footer
-    sections/                  one component per page section
+    layout/                    Header, Footer, PageHeader, Seo, ScrollManager
+    sections/                  content blocks used by the pages
     contact/                   EnquiryForm and its validation
     ui/                        BrandLogo, BearingSectionDrawing, BearingSpinner, WhatsAppButton, Reveal, …
   context/                     passes "Enquire now" choices to the form
-  hooks/                       scroll state, active section tracking
-  lib/                         search, smooth scrolling, motion presets, enquiry submit stub
+  hooks/                       scroll state
+  lib/                         routes, SEO metadata, search, scrolling, motion presets, enquiry (WhatsApp)
+scripts/prerender.mjs          writes the static HTML for each page, sitemap.xml and robots.txt
 public/
   images/photos/               responsive WebP photographs
   images/brand/                Sarga Bharath logo: header lockup, full logo, monogram
@@ -98,7 +113,7 @@ phone number and email address were carried over from an earlier version of this
 
 The hero search is a local search over `bearings.ts` (no product database). It matches bearing types, sector
 solutions and technologies, including common terms such as "taper", "axle box" or "insulated". Choosing a result
-scrolls to it and highlights it; if nothing matches, the visitor can send the search text to the enquiry form.
+opens its page; if nothing matches, the visitor can send the search text to the enquiry form.
 
 ## Enquiry form
 
