@@ -37,34 +37,40 @@ const rise: Variants = {
 
 export function Hero() {
   return (
-    <section id="home" aria-labelledby="hero-title" className="relative overflow-hidden border-b border-steel-200 bg-white">
-      {/* Background imagery: subtle precision engineering gear train with blueprint gradient */}
+    <section id="home" aria-labelledby="hero-title" className="on-dark relative overflow-hidden bg-navy-950">
+      {/* Background: precision gear train photograph under a navy blueprint wash, slowly settling into place */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 overflow-hidden select-none">
-        <picture>
+        <m.picture
+          className="block h-full w-full"
+          initial={{ scale: 1.12 }}
+          animate={{ scale: 1 }}
+          transition={{ duration: 2.4, ease: [0.22, 1, 0.36, 1] }}
+        >
           <source type="image/webp" srcSet="/images/photos/hero-bg-1280.webp 1280w, /images/photos/hero-bg.webp 1920w" />
           <img
             src="/images/photos/hero-bg.jpg"
             alt=""
-            className="h-full w-full object-cover object-right-top opacity-20 mix-blend-multiply sm:opacity-25"
+            className="h-full w-full object-cover object-[30%_center] lg:object-center"
             width={1920}
             height={1080}
             loading="eager"
             decoding="async"
           />
-        </picture>
-        <div className="absolute inset-0 bg-gradient-to-r from-white via-white/85 to-white/40" />
-        <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-white/30" />
+        </m.picture>
+        <div className="absolute inset-0 bg-gradient-to-r from-navy-950/95 via-navy-950/70 to-navy-950/35" />
+        <div className="absolute inset-0 bg-gradient-to-t from-navy-950/90 via-transparent to-navy-950/40" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_75%_40%,rgb(45_184_234/0.18),transparent_60%)]" />
       </div>
 
       <div
         aria-hidden="true"
-        className="drafting-grid pointer-events-none absolute inset-y-0 right-0 z-0 hidden w-[62%] [mask-image:linear-gradient(to_right,transparent,black_35%)] lg:block"
+        className="pointer-events-none absolute inset-y-0 right-0 z-0 hidden w-[62%] [background-image:linear-gradient(to_right,rgb(45_184_234/0.08)_1px,transparent_1px),linear-gradient(to_bottom,rgb(45_184_234/0.08)_1px,transparent_1px)] [background-size:32px_32px] [mask-image:linear-gradient(to_right,transparent,black_35%)] lg:block"
       />
       <Container className="relative z-10 grid items-center gap-12 pt-10 pb-16 sm:pt-14 lg:grid-cols-[minmax(0,1.12fr)_minmax(0,1fr)] lg:gap-12 lg:pt-14 lg:pb-20 xl:gap-16">
         <m.div variants={intro} initial="hidden" animate="show">
           <m.p
             variants={rise}
-            className="inline-flex items-center gap-2.5 rounded-full border border-steel-200 bg-white px-3.5 py-1.5 text-xs font-semibold text-navy-900 shadow-sm"
+            className="inline-flex items-center gap-2.5 rounded-full border border-white/20 bg-white/10 px-3.5 py-1.5 text-xs font-semibold text-white backdrop-blur-sm"
           >
             <span aria-hidden="true" className="flex h-3 w-4.5 flex-col overflow-hidden rounded-[2px] ring-1 ring-navy-900/10">
               <span className="flex-1 bg-[#ff9933]" />
@@ -77,12 +83,12 @@ export function Hero() {
           <m.h1
             variants={rise}
             id="hero-title"
-            className="mt-5 text-[2.5rem] leading-[1.04] font-bold tracking-[-0.025em] text-navy-900 [font-stretch:80%] sm:text-[3.3rem] lg:text-[3.05rem] xl:text-[3.6rem]"
+            className="mt-5 text-[2.5rem] leading-[1.04] font-bold tracking-[-0.025em] text-white [font-stretch:80%] sm:text-[3.3rem] lg:text-[3.05rem] xl:text-[3.6rem]"
           >
             Precision Bearing Solutions for Automotive &amp; Industrial
           </m.h1>
 
-          <m.p variants={rise} className="mt-5 max-w-[37rem] text-base leading-relaxed text-steel-600 sm:text-lg">
+          <m.p variants={rise} className="mt-5 max-w-[37rem] text-base leading-relaxed text-steel-300 sm:text-lg">
             From deep groove ball bearings to heavy-duty automotive and industrial assemblies, {company.shortName}{' '}
             Industries offers precision bearing solutions for vehicles and machinery, with Indian roots and a global
             outlook.
@@ -93,7 +99,7 @@ export function Hero() {
           </m.div>
 
           <m.div variants={rise} className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
-            <ButtonLink to={routes.products} size="lg" variant="secondary">
+            <ButtonLink to={routes.products} size="lg" variant="outline-light">
               Explore Bearing Range
             </ButtonLink>
             <ButtonLink to={routes.contact} size="lg">
@@ -103,7 +109,7 @@ export function Hero() {
               href={whatsappLink()}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 px-2 py-2 text-[15px] font-semibold whitespace-nowrap text-[#15803d] transition-colors hover:text-[#166534]"
+              className="inline-flex items-center justify-center gap-2 px-2 py-2 text-[15px] font-semibold whitespace-nowrap text-[#4ade80] transition-colors hover:text-[#86efac]"
             >
               <WhatsAppIcon className="size-5" />
               Chat on WhatsApp
@@ -111,15 +117,15 @@ export function Hero() {
             </a>
           </m.div>
 
-          <m.ul variants={rise} className="mt-10 grid gap-5 border-t border-steel-200 pt-7 sm:grid-cols-3 lg:mt-12">
+          <m.ul variants={rise} className="mt-10 grid gap-5 border-t border-white/15 pt-7 sm:grid-cols-3 lg:mt-12">
             {highlights.map(({ icon: Icon, title, text }) => (
               <li key={title} className="flex items-start gap-3">
-                <span className="grid size-9 shrink-0 place-items-center rounded bg-blue-50 text-blue-700">
+                <span className="grid size-9 shrink-0 place-items-center rounded bg-white/10 text-cyan-400 ring-1 ring-white/15">
                   <Icon aria-hidden="true" className="size-[18px]" strokeWidth={1.75} />
                 </span>
                 <span>
-                  <span className="block text-sm font-semibold text-navy-900">{title}</span>
-                  <span className="mt-0.5 block text-xs leading-relaxed text-steel-600">{text}</span>
+                  <span className="block text-sm font-semibold text-white">{title}</span>
+                  <span className="mt-0.5 block text-xs leading-relaxed text-steel-300">{text}</span>
                 </span>
               </li>
             ))}
@@ -274,13 +280,13 @@ function BearingSearch() {
       </p>
 
       <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
-        <span className="font-semibold text-navy-900">Popular:</span>
+        <span className="font-semibold text-steel-300">Popular:</span>
         {suggestions.map((s) => (
           <button
             key={s.label}
             type="button"
             onClick={() => navigate(s.target)}
-            className="rounded-full border border-steel-200 bg-steel-50 px-3 py-1 font-medium text-navy-800 transition-colors hover:border-blue-600 hover:bg-blue-50 hover:text-blue-700"
+            className="rounded-full border border-white/20 bg-white/10 px-3 py-1 font-medium text-white transition-colors hover:border-cyan-400 hover:bg-white/20"
           >
             {s.label}
           </button>
@@ -297,10 +303,10 @@ function HeroDrawing() {
   return (
     <figure className="relative">
       <div className="relative p-5 sm:p-6">
-        <m.span aria-hidden="true" className="absolute inset-x-0 top-0 h-px origin-left bg-navy-900/35" initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={draw} />
-        <m.span aria-hidden="true" className="absolute inset-y-0 right-0 w-px origin-top bg-navy-900/35" initial={{ scaleY: 0 }} animate={{ scaleY: 1 }} transition={{ ...draw, delay: 0.15 }} />
-        <m.span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-px origin-right bg-navy-900/35" initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ ...draw, delay: 0.3 }} />
-        <m.span aria-hidden="true" className="absolute inset-y-0 left-0 w-px origin-bottom bg-navy-900/35" initial={{ scaleY: 0 }} animate={{ scaleY: 1 }} transition={{ ...draw, delay: 0.45 }} />
+        <m.span aria-hidden="true" className="absolute inset-x-0 top-0 h-px origin-left bg-white/30" initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={draw} />
+        <m.span aria-hidden="true" className="absolute inset-y-0 right-0 w-px origin-top bg-white/30" initial={{ scaleY: 0 }} animate={{ scaleY: 1 }} transition={{ ...draw, delay: 0.15 }} />
+        <m.span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-px origin-right bg-white/30" initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ ...draw, delay: 0.3 }} />
+        <m.span aria-hidden="true" className="absolute inset-y-0 left-0 w-px origin-bottom bg-white/30" initial={{ scaleY: 0 }} animate={{ scaleY: 1 }} transition={{ ...draw, delay: 0.45 }} />
         <ZoneMarkers />
 
         <div className="relative bg-white ring-1 ring-navy-900/30">
@@ -351,7 +357,7 @@ function HeroDrawing() {
 }
 
 function ZoneMarkers() {
-  const marker = 'text-[9px] font-medium tracking-wider text-steel-600 uppercase select-none'
+  const marker = 'text-[9px] font-medium tracking-wider text-steel-300 uppercase select-none'
   return (
     <>
       <div aria-hidden="true" className="absolute inset-x-6 top-1.5 flex justify-between">
